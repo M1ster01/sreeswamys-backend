@@ -95,6 +95,18 @@ CREATE TABLE IF NOT EXISTS sale_items (
   price NUMERIC(12,2)
 );
 
+CREATE TABLE IF NOT EXISTS staff (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  phone VARCHAR(15),
+  role VARCHAR(50),
+  salary NUMERIC(12,2),
+  join_date DATE,
+  address TEXT,
+  aadhaar VARCHAR(20),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS job_cards (
   id SERIAL PRIMARY KEY,
   job_no VARCHAR(50) UNIQUE,
@@ -125,18 +137,6 @@ CREATE TABLE IF NOT EXISTS job_card_items (
   spare_id INTEGER REFERENCES spares(id),
   quantity INTEGER,
   price NUMERIC(12,2)
-);
-
-CREATE TABLE IF NOT EXISTS staff (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  phone VARCHAR(15),
-  role VARCHAR(50),
-  salary NUMERIC(12,2),
-  join_date DATE,
-  address TEXT,
-  aadhaar VARCHAR(20),
-  created_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS salary (

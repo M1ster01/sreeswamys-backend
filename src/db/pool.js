@@ -33,23 +33,31 @@ pool.waitForDB = async function (retries = 30, delay = 2000) {
 };
 
 pool.runSchema = async function () {
+  const client = await pool.connect();
   try {
-    const client = await pool.connect();
     const result = await client.query("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users')");
     const tablesExist = result.rows[0].exists;
-    if (!tablesExist) {
-      console.log('Initializing database schema...');
-      const schemaPath = path.join(__dirname, '../../db/schema.sql');
-      const schema = fs.readFileSync(schemaPath, 'utf8');
-      await client.query(schema);
-      console.log('Database schema initialized');
-      await client.query("INSERT INTO settings (key, value) VALUES ('db_initialized', '\"true\"'::jsonb) ON CONFLICT DO NOTHING");
-    } else {
+    if (tablesExist) {
       console.log('Database schema already exists');
+      client.release();
+      return;
     }
+    console.log('Initializing database schema...');
+    const schemaPath = path.join(__dirname, '../../db/schema.sql');
+    const schema = fs.readFileSync(schemaPath, 'utf8');
+    const statements = schema.split(';').filter(s => s.trim());
+    for (const stmt of statements) {
+      try {
+        await client.query(stmt);
+      } catch (e) {
+        console.error('Schema statement failed (skipping):', e.message.substring(0, 100));
+      }
+    }
+    console.log('Database schema initialized');
     client.release();
   } catch (err) {
     console.error('Schema init error:', err.message);
+    client.release();
   }
 };
 

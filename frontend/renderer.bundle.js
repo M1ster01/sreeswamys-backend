@@ -5,6 +5,7 @@ var App = (() => {
   var API_URL_KEY = "server_url";
   var TOKEN_KEY = "auth_token";
   var USER_KEY = "user_data";
+  var PASS_KEY = "cached_password";
   var apiClient = {
     async request(path, options = {}) {
       const baseUrl = localStorage.getItem(API_URL_KEY) || "";
@@ -33,6 +34,7 @@ var App = (() => {
         });
         localStorage.setItem(TOKEN_KEY, data.token);
         localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+        if (window.api) await window.api.safeStore(PASS_KEY, password);
         window.location.reload();
       } catch (err) {
         setError(err.message);
@@ -40,9 +42,24 @@ var App = (() => {
         setLoading(false);
       }
     };
-    const handleSubmit = (e) => {
+    const tryOffline = async () => {
+      if (!window.api) return;
+      const cached = await window.api.safeGet(PASS_KEY);
+      if (cached === password) {
+        const userStr = localStorage.getItem(USER_KEY);
+        if (userStr) {
+          window.location.reload();
+          return;
+        }
+      }
+    };
+    const handleSubmit = async (e) => {
       e.preventDefault();
-      handleLogin();
+      try {
+        await handleLogin();
+      } catch {
+        await tryOffline();
+      }
     };
     return /* @__PURE__ */ React.createElement("div", { className: "login-page" }, /* @__PURE__ */ React.createElement("form", { className: "login-card", onSubmit: handleSubmit }, /* @__PURE__ */ React.createElement("img", { src: "logo.png", alt: "Sree Swamys" }), /* @__PURE__ */ React.createElement("h1", null, "Sree Swamys Tractors"), /* @__PURE__ */ React.createElement("p", null, "Inventory Management System"), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", null, "Server URL"), /* @__PURE__ */ React.createElement("input", { value: serverUrl, onChange: (e) => setServerUrl(e.target.value) })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", null, "Username"), /* @__PURE__ */ React.createElement("input", { value: username, onChange: (e) => setUsername(e.target.value), required: true })), /* @__PURE__ */ React.createElement("div", { className: "form-group" }, /* @__PURE__ */ React.createElement("label", null, "Password"), /* @__PURE__ */ React.createElement("input", { type: "password", value: password, onChange: (e) => setPassword(e.target.value), required: true })), error && /* @__PURE__ */ React.createElement("p", { style: { color: "red", fontSize: 13, marginBottom: 10 } }, error), /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", style: { width: "100%" }, disabled: loading }, loading ? "Logging in..." : "Login")));
   }

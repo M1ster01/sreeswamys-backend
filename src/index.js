@@ -58,8 +58,13 @@ app.get('/', (req, res) => {
   res.json({ app: "Sree Swamys Tractors", status: 'running', version: '1.0.0' });
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+app.get('/api/health', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users')");
+    res.json({ status: 'ok', users_table: result.rows[0].exists, timestamp: new Date().toISOString() });
+  } catch (e) {
+    res.json({ status: 'degraded', error: e.message, timestamp: new Date().toISOString() });
+  }
 });
 
 app.get('/sreeswamys*', (req, res) => {

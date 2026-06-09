@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sreeswamys-db
+    restart: always
+    environment:
+      POSTGRES_USER: sreeswamys
+      POSTGRES_PASSWORD: ChangeThisPassword123!
+      POSTGRES_DB: sreeswamys_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - sreeswamys-net
+
+  backend:
+    image: sreeswamys-backend:1.0
+    container_name: sreeswamys-backend
+    restart: always
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: sreeswamys
+      DB_PASSWORD: ChangeThisPassword123!
+      DB_NAME: sreeswamys_db
+      JWT_SECRET: your-super-secret-jwt-key-change-this
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - sreeswamys-net
+
+  updates:
+    image: nginx:alpine
+    container_name: sreeswamys-updates
+    restart: always
+    ports:
+      - "3001:80"
+    networks:
+      - sreeswamys-net
+
+volumes:
+  pgdata:
+
+networks:
+  sreeswamys-net:
+    driver: bridge

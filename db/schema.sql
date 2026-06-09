@@ -1,4 +1,4 @@
--- SreeSwamy's Tractors SUWA - Database Schema
+-- Sree Swamys Tractors - Database Schema
 
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,

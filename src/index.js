@@ -30,7 +30,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 wss.on('connection', (ws) => {
   console.log('Client connected via WebSocket');
   ws.on('message', (msg) => console.log('WS:', msg.toString()));
-  ws.send(JSON.stringify({ type: 'connected', message: 'SreeSwamys server connected' }));
+  ws.send(JSON.stringify({ type: 'connected', message: 'Sree Swamys server connected' }));
 });
 
 global.broadcast = (data) => {
@@ -54,7 +54,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/sync', syncRoutes);
 
 app.get('/', (req, res) => {
-  res.json({ app: "SreeSwamy's Tractors SUWA", status: 'running', version: '1.0.0' });
+  res.json({ app: "Sree Swamys Tractors", status: 'running', version: '1.0.0' });
 });
 
 app.get('/api/health', (req, res) => {
@@ -68,7 +68,7 @@ async function start() {
     await pool.waitForDB();
     await pool.runSchema();
     server.listen(PORT, '0.0.0.0', () => {
-      console.log(`SreeSwamy's Tractors SUWA Backend running on port ${PORT}`);
+      console.log(`Sree Swamys Tractors Backend running on port ${PORT}`);
     });
   } catch (err) {
     console.error('Failed to start server:', err.message);

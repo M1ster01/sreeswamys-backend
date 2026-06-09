@@ -1,7 +1,7 @@
 {
   "name": "sreeswamys-backend",
   "version": "1.0.0",
-  "description": "SreeSwamy's Tractors SUWA - Backend API",
+  "description": "Sree Swamys Tractors - Backend API",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

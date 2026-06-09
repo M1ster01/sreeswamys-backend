@@ -17,7 +17,7 @@ services:
       - sreeswamys-net
 
   backend:
-    build: .
+    image: m1ster06/sreeswamys-backend:1.0
     container_name: sreeswamys-backend
     restart: always
     environment:
